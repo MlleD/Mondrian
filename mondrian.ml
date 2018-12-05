@@ -1,3 +1,4 @@
+
 open Graphics;;
 
 (* Types donnés dans le sujet. *)
@@ -20,6 +21,13 @@ type rectangle =
     }
 ;;
 
+type line =
+    {
+      p1 : int * int;
+      p2 : int * int;
+    }
+
+(* Exemple de bsp du sujet du sujet *)
 let bsp_figure2 =
   L({coord = 545; colored = false},
     L({coord = 760; colored = false},
@@ -50,29 +58,27 @@ let bsp_figure2 =
 
 (* Fonction renvoyant la liste des rectangles d’un BSP. *)
 let rectangles_from_bsp bsp x_min x_max y_min y_max = 
-  let rec auxD bsp x_min x_max y_min y_max l =
-        match bsp with
-	    R (color) -> {p1 = (x_min, y_min); p2 = (x_max, y_min); p3 = (x_max, y_max); p4 = (x_min, y_max)} :: l
-	  | L(l, g, d) -> auxG bsp d l.coord x_max y_min y_max
-  and auxG bsp x_min x_max y_min y_max l =
-        match bsp with
-	R (color) ->
-	  {p1 = (x_min, y_min); p2 = (x_max, y_min); p3 = (x_max, y_max); p4 = (x_min, y_max)} :: l
+  let rec aux bsp x_min x_max y_min y_max par r_list =
+    match bsp with
+	R(_) -> [{p1 = (x_min, y_min); p2 = (x_max, y_min); p3 = (x_min, y_max); p4 = (x_max, y_max)}]
       | L(l, g, d) ->
-	if par mod 2 = 0
-	then
-	  let _ = (aux bsp d l.coord x_max y_min y_max (par + 1))
-	  in
-	  (aux bsp g x_min l.coord y_min y_max (par + 1))
+	if par mod 2 = 0 then
+	  (aux d l.coord x_max y_min y_max (par + 1) r_list) @
+	  (aux g x_min l.coord y_min y_max (par + 1) r_list)
 	else
-	  let _ = (aux bsp d x_min x_max l.coord y_max (par + 1))
-	  in
-	  (aux bsp g x_min x_max y_min l.coord (par + 1))
-in auxD bsp x_min x_max y_min y_max []
+	  (aux d x_min x_max l.coord y_max (par + 1) r_list) @
+	  (aux g x_min x_max y_min l.coord (par + 1) r_list)
+  in aux bsp x_min x_max y_min y_max 0 [] 
 ;;
 
 (* Fonction renvoyant la liste des lignes de séparation d’un BSP avec leurs couleurs. *)
-let lines_from_bsp bsp x_min x_max y_min y_max = ""
+let lines_from_bsp bsp x_min x_max y_min y_max =
+  let aux (rect : rectangle) = [{p1 = rect.p1; p2 = rect.p2}; {p1 = rect.p2; p2 = rect.p3};
+				{p1 = rect.p3; p2 = rect.p4}; {p1 = rect.p4; p2 = rect.p1}]
+  in
+  List.flatten (List.map aux (rectangles_from_bsp bsp x_min x_max y_min y_max))
 ;;
+
+lines_from_bsp bsp_figure2 0 1000 0 1000;;
 
 
