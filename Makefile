@@ -4,4 +4,4 @@ mondrian: mondrian.ml
 
 # Efface les fichiers auxiliaires
 clean:
-	rm *.cmi *.cmo
+	rm -rf *.cmi *.cmo
