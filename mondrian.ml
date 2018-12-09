@@ -86,3 +86,21 @@ let random_colour () =
   let c = Random.bool() in
   if c then Some Red
   else Some Blue
+
+(* Fonctions de conversion *)
+(* Conversion de colour vers string *)
+let string_of_colour c = 
+  if c = Some Red then "Red"
+  else if c = Some Blue then "Blue"
+  else if c = Some Magenta then "Magenta"
+  else "None"
+
+(* Conversion de label vers string *)
+let string_of_label l =
+  "{coord = " ^ (string_of_int l.coord) ^ "; colored = " ^ (string_of_bool l.colored) ^ "}"
+
+(* Conversion de bsp vers string *)
+let rec string_of_bsp bsp =
+  match bsp with
+  R c -> "R " ^ (string_of_colour c)
+  | L (l, g, d) -> "L (" ^ (string_of_label l) ^ "), " ^ (string_of_bsp g) ^ (string_of_bsp d)
