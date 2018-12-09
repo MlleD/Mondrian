@@ -75,3 +75,14 @@ let lines_from_bsp bsp x_min x_max y_min y_max =
   List.flatten (List.map aux (rectangles_from_bsp bsp x_min x_max y_min y_max))
 
 (* lines_from_bsp bsp_figure2 0 1000 0 1000;; *)
+
+(* Fonction générant un nombre aléatoire dans un intervalle d'entiers [min; max[ *)
+let random min max = 
+  Random.self_init();
+  min + (Random.int (max - min))
+
+(* Fonction générant une couleur aléatoire *)
+let random_colour () =
+  let c = Random.bool() in
+  if c then Some Red
+  else Some Blue
