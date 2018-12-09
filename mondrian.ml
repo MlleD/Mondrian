@@ -1,15 +1,14 @@
+(* Couleurs *)
+type colour = Red | Blue | Magenta
 
-open Graphics;;
-
-(* Types donnés dans le sujet. *)
+(* BSP *)
 type label =
     {
       coord : int;
       colored : bool;
     }
-;;
 
-type bsp = R of color option | L of label * bsp * bsp;;
+type bsp = R of colour option | L of label * bsp * bsp;;
 
 (* Autres types *)
 type rectangle =
@@ -19,7 +18,6 @@ type rectangle =
       p3 : int * int;
       p4 : int * int;
     }
-;;
 
 type line =
     {
@@ -54,7 +52,6 @@ let bsp_figure2 =
       )
     )
   )
-;;
 
 (* Fonction renvoyant la liste des rectangles d’un BSP. *)
 let rectangles_from_bsp bsp x_min x_max y_min y_max = 
@@ -69,7 +66,6 @@ let rectangles_from_bsp bsp x_min x_max y_min y_max =
 	  (aux d x_min x_max l.coord y_max (par + 1) r_list) @
 	  (aux g x_min x_max y_min l.coord (par + 1) r_list)
   in aux bsp x_min x_max y_min y_max 0 [] 
-;;
 
 (* Fonction renvoyant la liste des lignes de séparation d’un BSP avec leurs couleurs. *)
 let lines_from_bsp bsp x_min x_max y_min y_max =
@@ -77,8 +73,5 @@ let lines_from_bsp bsp x_min x_max y_min y_max =
 				{p1 = rect.p3; p2 = rect.p4}; {p1 = rect.p4; p2 = rect.p1}]
   in
   List.flatten (List.map aux (rectangles_from_bsp bsp x_min x_max y_min y_max))
-;;
 
-lines_from_bsp bsp_figure2 0 1000 0 1000;;
-
-
+(* lines_from_bsp bsp_figure2 0 1000 0 1000;; *)
