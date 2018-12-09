@@ -104,3 +104,26 @@ let rec string_of_bsp bsp =
   match bsp with
   R c -> "R " ^ (string_of_colour c)
   | L (l, g, d) -> "L (" ^ (string_of_label l) ^ "), " ^ (string_of_bsp g) ^ (string_of_bsp d)
+
+
+(* Fonction générant une configuration finale aléatoire du jeu *)
+(* Parametres : depth_max (profondeur du bsp), x_max (abscisse maximale), y_max (ordonnée maximale) *)
+let random_final_bsp depth_max x_max y_max = 
+  let rec add_node current_depth x_min x_max y_min y_max = 
+    if (current_depth = depth_max) || (x_min = x_max) || (y_min = y_max) then
+      R (random_colour ())
+    else
+      let next_depth = current_depth + 1 in
+      if (current_depth mod 2) = 0 then
+        let random_x = random x_min x_max
+        in L ( {coord = random_x; colored = Random.bool() },
+                add_node next_depth x_min (random_x - 1) y_min y_max,
+                add_node next_depth (random_x + 1) x_max y_min y_max
+        )
+      else
+        let random_y = random y_min y_max
+        in L ( {coord = random_y; colored = Random.bool() },
+                add_node next_depth x_min x_max (random_y - 1) y_max,
+                add_node next_depth x_min x_max y_min (random_y + 1)
+        )
+    in add_node 0 1 x_max 1 y_max
