@@ -126,4 +126,22 @@ let random_final_bsp depth_max x_max y_max =
                 add_node next_depth x_min x_max (random_y - 1) y_max,
                 add_node next_depth x_min x_max y_min (random_y + 1)
         )
-    in add_node 0 1 x_max 1 y_max
+  in add_node 0 1 x_max 1 y_max
+
+type rectangle2 = {xmin: int ; xmax : int ; ymin : int ; ymax : int}
+;;
+let rectangles_from_bsp bsp x_max y_max = 
+  let rec list_rectangles parity_depth bsp x_min x_max y_min y_max acc =
+    match bsp with
+    | R c -> ({xmin = x_min; xmax = x_max; ymin = y_min; ymax = y_max}, c)::[]
+    | L (l, left, right) -> 
+      if parity_depth then
+        let rectangle_left = list_rectangles false left x_min l.coord y_min y_max acc
+        and rectangle_right = list_rectangles false right l.coord x_max y_min y_max acc in
+        rectangle_left@rectangle_right@acc
+      else
+        let rectangle_low = list_rectangles true left x_min x_max y_min l.coord acc 
+        and rectangle_high = list_rectangles true right x_min x_max l.coord y_max acc in
+        rectangle_low@rectangle_high@acc
+  in list_rectangles true bsp 1 x_max 1 y_max []
+;;
