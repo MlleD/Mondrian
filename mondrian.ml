@@ -145,3 +145,51 @@ let rectangles_from_bsp bsp x_max y_max =
         rectangle_low@rectangle_high@acc
   in list_rectangles true bsp 1 x_max 1 y_max []
 ;;
+
+(* Determine la couleur du noeud racine du bsp passé en parametre *)
+let rec root_line_color bsp x_max y_max= 
+  match bsp with
+  | R c -> c
+  | L (l, left, right) -> 
+    if not l.colored then
+      None
+    else
+      match (left, right) with
+      | L (a, b, c) , R d | R d, L (a, b, c) ->
+        (* Cas où un fils est un label et l'autre un rectangle *)
+        let color_R = root_line_color (R d) x_max y_max 
+        and rectangles = rectangles_from_bsp (L (a, b, c)) x_max y_max in
+        let filtered = List.filter (function (r, c) -> List.mem a.coord [r.xmin; r.xmax; r.ymin; r.ymax]) rectangles
+        in 
+        let (nbR, nbB) =
+          let rec count_colors list nbR nbB = 
+          match list with
+          | [] -> (nbR, nbB)
+          | h::t -> 
+            match (snd h) with
+            | Some Red -> count_colors t (nbR + 1) nbB
+            | _ -> count_colors t nbR (nbB + 1)
+          in count_colors filtered 0 0
+        in 
+        if (nbB = nbR) || (nbR = (nbB + 1) && color_R = Some Blue) || (nbB = (nbR + 1) && color_R = Some Red) then Some Magenta
+        else if nbR > nbB then Some Red
+        else Some Blue
+      | _ -> (* Cas où les deux fils sont tous les deux des Labels ou des Rectangles *)
+        let color_left = root_line_color left x_max y_max and color_right = root_line_color right x_max y_max in
+        if color_left = color_right then color_left
+        else if (color_left = Some Magenta) then color_right
+        else if (color_right = Some Magenta) then color_left
+        else Some Magenta
+
+(*parcours prefixe : racine puis fils gauche puis fils droit*)
+let lines_from_bsp bsp x_max y_max = 
+  let rec list parity_depth bsp x_min x_max y_min y_max acc =
+    match bsp with
+    | R c -> acc
+    | L (l, left, right) -> 
+        if parity_depth then
+        ({xmin = l.coord; xmax = l.coord; ymin = y_min; ymax = y_max}, root_line_color bsp x_max y_max)::(list false left x_min l.coord y_min y_max acc)@(list false right l.coord x_max y_min y_max acc)
+        else
+        ({xmin = x_min; xmax = x_max; ymin = l.coord; ymax = l.coord}, root_line_color bsp x_max y_max)::(list true left x_min x_max y_min l.coord acc)@(list true right x_min x_max l.coord y_max acc)
+  in list true bsp 1 x_max 1 y_max []
+;;
