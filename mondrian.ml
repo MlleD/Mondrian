@@ -195,12 +195,18 @@ let lines_from_bsp bsp x_max y_max =
 ;;
 
 (* Fonction affichant, sur le canevas graphique, la configuration courante du joueur. *)
-let draw_current_bsp rectangle_l =
+let draw_current_bsp bsp x_max y_max =
   (* Pour chaque élément de la liste de rectangle, obtenue grâce à lines_from_bsp,
-     tracer une ligne depuis xmin, ymin à xmax, ymax *)
-  (* Le moveto se fait tout seul ? Voir la spécification de lineto dans le cours *)
-  (* A faire : gérer la coloration des lignes *)
-  List.iter (Graphics.lineto rectangle_l.xmax rectangle_l.ymax) rectangle_l
+     tracer une ligne depuis xmin, ymin à xmax, ymax avec la couleur associée. *)
+
+  let lines_l = lines_from_bsp bsp x_max y_max
+  in
+  
+
+  Graphics.moveto xmin ymin
+  Graphics.set_color c
+  Graphics.lineto xmax ymax
+    
 ;;
 
 
