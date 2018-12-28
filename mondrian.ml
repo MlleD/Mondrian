@@ -200,13 +200,20 @@ let draw_current_bsp bsp x_max y_max =
      tracer une ligne depuis xmin, ymin à xmax, ymax avec la couleur associée. *)
 
   let lines_l = lines_from_bsp bsp x_max y_max
-  in
-  
-
-  Graphics.moveto xmin ymin
-  Graphics.set_color c
-  Graphics.lineto xmax ymax
-    
+  in List.iter (fun x -> match x with
+      (r, c) ->
+	Graphics.moveto r.xmin r.ymin;
+	if c = Red then
+	  Graphics.set_color red;
+	else if c = Blue then
+	  Graphics.set_color blue;
+	else if c = Magenta then
+	  Graphics.set_color magenta;
+	else
+	  Graphics.set_color black;
+	
+	Graphics.lineto r.xmax r.ymax; 
+  ) lines_l  
 ;;
 
 
