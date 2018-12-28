@@ -196,24 +196,26 @@ let lines_from_bsp bsp x_max y_max =
 
 (* Fonction affichant, sur le canevas graphique, la configuration courante du joueur. *)
 let draw_current_bsp bsp x_max y_max =
-  (* Pour chaque élément de la liste de rectangle, obtenue grâce à lines_from_bsp,
-     tracer une ligne depuis xmin, ymin à xmax, ymax avec la couleur associée. *)
-
   let lines_l = lines_from_bsp bsp x_max y_max
-  in List.iter (fun x -> match x with
-      (r, c) ->
-	Graphics.moveto r.xmin r.ymin;
-	if c = Red then
-	  Graphics.set_color red;
-	else if c = Blue then
-	  Graphics.set_color blue;
-	else if c = Magenta then
-	  Graphics.set_color magenta;
+  in
+  let trace elem = match elem with
+      (rect, col) ->
+	Graphics.moveto rect.xmin rect.ymin;
+
+	if col = Red then
+	  Graphics.set_color Graphics.red
+	else if col = Blue then
+	  Graphics.set_color Graphics.blue
+	else if col = Magenta then
+	  Graphics.set_color Graphics.magenta
 	else
-	  Graphics.set_color black;
-	
-	Graphics.lineto r.xmax r.ymax; 
-  ) lines_l  
+	  Graphics.set_color Graphics.black;
+
+	Graphics.lineto rect.xmax rect.ymax
+  in List.iter trace lines_l
+  (* ERREUR : This expression has type (rectangle2 * colour option) list
+       but an expression was expected of type (rectangle2 * colour) list
+       Type colour option is not compatible with type colour *)
 ;;
 
 
