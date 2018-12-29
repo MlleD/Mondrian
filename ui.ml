@@ -47,4 +47,6 @@ let (bsp, lines) = init_game ()
 in
 set_color red;
 try loop red bsp lines
-with Quit -> close_graph ()
+with 
+| Quit -> close_graph ()
+| Graphic_failure ("fatal I/O error") -> close_graph()
