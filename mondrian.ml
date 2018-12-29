@@ -103,6 +103,14 @@ let graphics_color_of_colour c none =
   else if c = Some Magenta then Graphics.magenta
   else none
 
+(* Conversion de Graphics.color vers colour *)
+(* Paramètres : c, couleur à convertir et none, la valeur à renvoyer si c vaut None*)
+let colour_of_graphics_color c none =
+  if c = Graphics.red then Some Red
+  else if c = Graphics.blue then Some Blue
+  else if c = Graphics.magenta then Some Magenta
+  else none
+
 (* Conversion de label vers string *)
 let string_of_label l =
   "{coord = " ^ (string_of_int l.coord) ^ "; colored = " ^ (string_of_bool l.colored) ^ "}"
@@ -222,3 +230,29 @@ let draw_current_bsp bsp x_max y_max =
   trace_lines lines_l
 ;;
 
+(* Renvoie le bsp initial correspondat au bsp passé en passé en paramètre *)
+let rec initial_bsp_from_bsp bsp = 
+    match bsp with
+    | R color -> R None
+    | L (l, left, right) -> L (l, initial_bsp_from_bsp left, initial_bsp_from_bsp right)
+;;
+
+(* Renvoie le bsp modifié avec le rectangle colorié *)
+let colorise_clicked_rectangle bsp x_max y_max current_color mouse_x mouse_y = 
+  let rec parcours bsp' parity_depth x_min x_max' y_min y_max' = 
+    match bsp' with
+    | R c -> 
+    (* Si la souris est dans ce rectangle *)
+    if (mouse_x >= x_min) && (mouse_x <= x_max') && (mouse_y >= y_min) && (mouse_y <= y_max')
+    then R (colour_of_graphics_color current_color None)
+    else R c
+    | L (l, left, right) ->
+    if parity_depth then L (l, parcours left false x_min l.coord y_min y_max', parcours right false l.coord x_max' y_min y_max')
+    else L(l, parcours left true x_min x_max' y_min l.coord , parcours right true x_min x_max' l.coord y_max')
+  in parcours bsp true 1 x_max 1 y_max
+;;
+
+(* Vérifie si la souris est sur une ligne de la liste de lignes line_list *)
+let is_in_line line_list mouse_x mouse_y =
+  List.exists (fun (line, col) -> mouse_x = line.xmin || mouse_x = line.xmax || mouse_y = line.ymin || mouse_y = line.ymax) line_list
+;;
