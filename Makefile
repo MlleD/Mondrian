@@ -1,7 +1,13 @@
+SOURCES = mondrian.ml ui.ml
+LIBS = graphics.cma
+
 # Crée l'exécutable
 mondrian: mondrian.ml
-	ocamlc -o mondrian -c mondrian.ml -I Graphics
+	ocamlc -o mondrian $(LIBS) mondrian.ml
+
+ui: ui.ml
+	ocamlc -o ui $(LIBS) $(SOURCES)
 
 # Efface les fichiers auxiliaires
 clean:
-	rm -rf *.cmi *.cmo
+	$(RM) *~ *.cmi *.cmo
