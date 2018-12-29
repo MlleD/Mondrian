@@ -95,6 +95,14 @@ let string_of_colour c =
   else if c = Some Magenta then "Magenta"
   else "None"
 
+(* Conversion de colour vers Graphics.color *)
+(* Paramètres : c, couleur à convertir et none, la valeur à renvoyer si c vaut None*)
+let graphics_color_of_colour c none =
+  if c = Some Red then Graphics.red
+  else if c = Some Blue then Graphics.blue
+  else if c = Some Magenta then Graphics.magenta
+  else none
+
 (* Conversion de label vers string *)
 let string_of_label l =
   "{coord = " ^ (string_of_int l.coord) ^ "; colored = " ^ (string_of_bool l.colored) ^ "}"
@@ -104,7 +112,6 @@ let rec string_of_bsp bsp =
   match bsp with
   R c -> "R " ^ (string_of_colour c)
   | L (l, g, d) -> "L (" ^ (string_of_label l) ^ "), " ^ (string_of_bsp g) ^ (string_of_bsp d)
-
 
 (* Fonction générant une configuration finale aléatoire du jeu *)
 (* Parametres : depth_max (profondeur du bsp), x_max (abscisse maximale), y_max (ordonnée maximale) *)
@@ -194,25 +201,24 @@ let lines_from_bsp bsp x_max y_max =
   in list true bsp 1 x_max 1 y_max []
 ;;
 
+(* Trace les lignes (avec leur couleur) de la liste de lignes passée en paramètre *)
+let trace_lines lines_list = 
+  let aux (rect, col) = 
+	Graphics.moveto rect.xmin rect.ymin;
+	Graphics.set_color (graphics_color_of_colour col Graphics.black);
+  Graphics.lineto rect.xmax rect.ymax
+  in List.iter aux lines_list
+;;
+  
 (* Fonction affichant, sur le canevas graphique, la configuration courante du joueur. *)
 let draw_current_bsp bsp x_max y_max =
   let lines_l = lines_from_bsp bsp x_max y_max
+  and rect_l = rectangles_from_bsp bsp x_max y_max
+  and trace_r (rect, col) = 
+  Graphics.set_color (graphics_color_of_colour col Graphics.white);
+  Graphics.fill_rect rect.xmin rect.ymin (rect.xmax - rect.xmin) (rect.ymax - rect.ymin)
   in
-  let trace elem = match elem with
-      (rect, col) ->
-	Graphics.moveto rect.xmin rect.ymin;
-
-	if col = Some Red then
-	  Graphics.set_color Graphics.red
-	else if col = Some Blue then
-	  Graphics.set_color Graphics.blue
-	else if col = Some Magenta then
-	  Graphics.set_color Graphics.magenta
-	else
-	  Graphics.set_color Graphics.black;
-
-	Graphics.lineto rect.xmax rect.ymax
-  in List.iter trace lines_l
+  List.iter trace_r rect_l;
+  trace_lines lines_l
 ;;
-
 
