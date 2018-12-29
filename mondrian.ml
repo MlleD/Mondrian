@@ -202,20 +202,17 @@ let draw_current_bsp bsp x_max y_max =
       (rect, col) ->
 	Graphics.moveto rect.xmin rect.ymin;
 
-	if col = Red then
+	if col = Some Red then
 	  Graphics.set_color Graphics.red
-	else if col = Blue then
+	else if col = Some Blue then
 	  Graphics.set_color Graphics.blue
-	else if col = Magenta then
+	else if col = Some Magenta then
 	  Graphics.set_color Graphics.magenta
 	else
 	  Graphics.set_color Graphics.black;
 
 	Graphics.lineto rect.xmax rect.ymax
   in List.iter trace lines_l
-  (* ERREUR : This expression has type (rectangle2 * colour option) list
-       but an expression was expected of type (rectangle2 * colour) list
-       Type colour option is not compatible with type colour *)
 ;;
 
 
