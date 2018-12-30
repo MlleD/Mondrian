@@ -2,5 +2,9 @@ cavalieri
 huynh
 
 [Instructions]
-- compilation : lancer la commande "make" dans un terminal, dans le dossier extrait, afin de compiler en utilisant le Makefile.
-- exécution : lancer l'exécutable
+- compilation du programme :
+  - ouvrir un terminal, dans le dossier extrait
+  - exécuter la commande "make mondrian" pour compiler mondrian.ml avec le Makefile
+  - exécuter la commande "make ui" pour compiler ui.ml avec le Makefile
+  - exécuter la commande "make clean" pour supprimer les fichiers .cmi et .cmo
+- exécution du programme : lancer l'exécutable ui (exécuter "./ui" sous Linux)
