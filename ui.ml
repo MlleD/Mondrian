@@ -63,17 +63,7 @@ let display_continue_message () =
   Graphics.draw_string "Continue"
 ;;
 
-let display_solution_message () =
-  prepare_message 70 (game_sizey + 27) 20;
-  Graphics.draw_string "To view the solution, press S."
-;;
-
-let display_quit_message () = 
-  prepare_message 400 (game_sizey + 27) 20;
-  Graphics.draw_string "To quit the game, press Q."
-;;
-
 let display_information () = 
-  display_solution_message ();
-  display_quit_message ()
+  prepare_message 70 (game_sizey + 27) 20;
+  Graphics.draw_string "To view the solution, press S. To quit the game, press Q. To play a new game, press R."
 ;;
