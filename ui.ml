@@ -2,8 +2,8 @@ open Graphics
 open Bsp
 
 (* Dimensions des zones de la fenetre *)
-let window_sizex = 600;;
-let window_sizey = 400;;
+let window_sizex = 800;;
+let window_sizey = 600;;
 let height_message_zone = 50;;
 let game_sizey = window_sizey - height_message_zone;;
 
