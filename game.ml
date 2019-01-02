@@ -10,7 +10,7 @@ let init_game () =
   and bbsp = Bsp.Generate.initial_bsp_from_bsp fbsp
   in 
   Ui.trace_lines lines;
-  (bbsp, lines)
+  (bbsp, fbsp, lines)
 ;;
 
 (* Vérifie si la souris est dans la zone de jeu *)
@@ -19,7 +19,8 @@ let mouse_in_game_zone () =
   in x < Ui.window_sizex && y < Ui.game_sizey
 ;;
 
-let rec loop current_color bsp lines : unit = 
+
+let rec loop current_color bsp fbsp lines : unit = 
   let event = wait_next_event [Button_down; Key_pressed] 
   in 
   (* S'il y a eu un clic de souris *)
@@ -37,15 +38,20 @@ let rec loop current_color bsp lines : unit =
     Ui.trace_lines lines;
     message;
     set_color next_c;    
-    loop next_c bsp' lines;
-  else loop current_color bsp lines;
+    loop next_c bsp' fbsp lines;
+  else if event.keypressed && event.key = 'S' then
+    begin
+      Ui.draw_current_bsp fbsp Ui.window_sizex Ui.game_sizey;
+      Ui.trace_lines lines;
+    end
+  else loop current_color bsp fbsp lines;
 in
 Ui.init_window();
 Ui.display_solution_message();
-let (bsp, lines) = init_game ()
+let (bsp, fbsp, lines) = init_game ()
 in
 set_color red;
-try loop red bsp lines
+try loop red bsp fbsp lines
 with 
 | Quit -> close_graph ()
 | Graphic_failure ("fatal I/O error") -> close_graph()
