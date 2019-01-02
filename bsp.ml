@@ -169,3 +169,18 @@ let colorise_clicked_rectangle bsp x_max y_max current_color mouse_x mouse_y =
 let is_in_line line_list mouse_x mouse_y =
   List.exists (fun (line, col) -> mouse_x = line.xmin || mouse_x = line.xmax || mouse_y = line.ymin || mouse_y = line.ymax) line_list
 ;;
+
+(* Vérifie si la configuration actuelle est finale et gagnante *)
+(* Paramètres : bsp courant, line_list du bsp final *)
+let check_current bsp xmax ymax line_list =
+  let rec is_final bsp = 
+    match bsp with
+    | R c -> c <> None
+    | L (l, left, right) -> is_final left && is_final right
+  in if is_final bsp then
+      (*Couleurs des lignes déduites à partir des colorations de rectangles dans le bsp courant *)
+      let lines_current = Retrieve.lines_from_bsp bsp xmax ymax
+      and compare lineCurr lineRef = ((snd lineCurr) = (snd lineRef))
+      (* Vérifie si la déduction des couleurs dans current donne les mêmes couleurs de ligne que dans line_list *)
+      in List.for_all2 (compare) line_list lines_current
+  else false
