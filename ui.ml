@@ -42,19 +42,28 @@ let draw_current_bsp bsp x_max y_max =
   trace_lines lines_l
 ;;
 
-let prepare_message () =
+let prepare_message left_margin bottom_margin text_size =
   Graphics.set_color white;
-  Graphics.fill_rect 0 game_sizey window_sizex height_message_zone;
+  Graphics.fill_rect left_margin bottom_margin (window_sizex - left_margin) text_size;
   Graphics.set_color black;
-  Graphics.moveto 70 (game_sizey + 20);
-  Graphics.set_text_size 20
+  Graphics.set_text_size text_size;
+  Graphics.moveto left_margin bottom_margin
+;;
+
+let prepare_status_message () = 
+  prepare_message 70 (game_sizey + 5) 20
 ;;
 
 let display_win_message () = 
-  prepare_message ();
+  prepare_status_message();
   Graphics.draw_string "You won ! Congratulations ! "
 ;;
 let display_continue_message () =
-  prepare_message (); 
+  prepare_status_message(); 
   Graphics.draw_string "Continue"
+;;
+
+let display_solution_message () =
+  prepare_message 70 (game_sizey + 27) 20;
+  Graphics.draw_string "To view the solution, press S"
 ;;
