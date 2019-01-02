@@ -50,11 +50,19 @@ end
 
 module Generate = 
 struct
+  (* Limite minimale de hauteur/largeur d'un rectangle *)
+  let limit = 5;;
+
+  let rec is_limit x1 x2 = 
+    if x1 > x2 then is_limit x2 x1
+    else (x2 - x1) < limit
+  ;;
+
 (* Fonction générant une configuration finale aléatoire du jeu *)
 (* Parametres : depth_max (profondeur du bsp), x_max (abscisse maximale), y_max (ordonnée maximale) *)
 let random_final_bsp depth_max x_max y_max = 
   let rec add_node current_depth x_min x_max y_min y_max = 
-    if (current_depth = depth_max) || (x_min = x_max) || (y_min = y_max) then
+    if (current_depth = depth_max) || (is_limit x_min x_max) || (is_limit y_min y_max) then
       R (Aleatoire.random_colour ())
     else
       let next_depth = current_depth + 1 in
