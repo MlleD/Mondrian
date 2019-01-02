@@ -1,12 +1,9 @@
-SOURCES = mondrian.ml ui.ml
+SOURCES = bsp.ml ui.ml game.ml
 LIBS = graphics.cma
 
 # Crée l'exécutable
-mondrian: mondrian.ml
-	ocamlc -o mondrian $(LIBS) mondrian.ml
-
-ui: ui.ml
-	ocamlc -o ui $(LIBS) $(SOURCES)
+game: $(SOURCES)
+	ocamlc -o game $(LIBS) $(SOURCES)
 
 # Efface les fichiers auxiliaires
 clean:

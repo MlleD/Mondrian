@@ -1,24 +1,11 @@
 open Graphics
-
-exception Quit;;
+open Bsp
 
 (* Initialise la fenêtre graphique *)
-let init () : unit = 
+let init_window () : unit = 
   open_graph " 600x400";
   set_window_title "Mondrian";
-  ;;
-
-(* Initialise le jeu *)
-let init_game () =
-  let fbsp = Mondrian.random_final_bsp 3 (Graphics.size_x()) (Graphics.size_y())
-  in
-  let lines = Mondrian.lines_from_bsp fbsp (Graphics.size_x()) (Graphics.size_y())
-  and bbsp = Mondrian.initial_bsp_from_bsp fbsp
-  in 
-  Mondrian.trace_lines lines;
-  (bbsp, lines)
 ;;
-
 
 (* Renvoie la couleur suivante *)
 let next_color current_color = 
@@ -27,26 +14,23 @@ let next_color current_color =
   else red
 ;;
 
-let rec loop current_color bsp lines : unit = 
-  let event = wait_next_event [Button_down; Key_pressed] 
-  in 
-  (* S'il y a eu un clic de souris *)
-  if event.button then 
-  let bsp' = if Mondrian.is_in_line lines event.mouse_x event.mouse_y then bsp else
-  Mondrian.colorise_clicked_rectangle bsp (Graphics.size_x()) (Graphics.size_y()) current_color event.mouse_x event.mouse_y
-  and next_c = next_color current_color
+(* Trace les lignes (avec leur couleur) de la liste de lignes passée en paramètre *)
+let trace_lines lines_list = 
+  let aux (rect, col) = 
+	Graphics.moveto rect.xmin rect.ymin;
+	Graphics.set_color (Conversion.graphics_color_of_colour col Graphics.black);
+  Graphics.lineto rect.xmax rect.ymax
+  in List.iter aux lines_list
+;;
+  
+(* Fonction affichant, sur le canevas graphique, la configuration courante du joueur. *)
+let draw_current_bsp bsp x_max y_max =
+  let lines_l = Retrieve.lines_from_bsp bsp x_max y_max
+  and rect_l = Retrieve.rectangles_from_bsp bsp x_max y_max
+  and trace_r (rect, col) = 
+  Graphics.set_color (Conversion.graphics_color_of_colour col Graphics.white);
+  Graphics.fill_rect rect.xmin rect.ymin (rect.xmax - rect.xmin) (rect.ymax - rect.ymin)
   in
-  Mondrian.draw_current_bsp bsp' (Graphics.size_x()) (Graphics.size_y());
-  Mondrian.trace_lines lines;
-  set_color next_c;
-  loop next_c bsp' lines;
-  else loop current_color bsp lines
-in
-init();
-let (bsp, lines) = init_game ()
-in
-set_color red;
-try loop red bsp lines
-with 
-| Quit -> close_graph ()
-| Graphic_failure ("fatal I/O error") -> close_graph()
+  List.iter trace_r rect_l;
+  trace_lines lines_l
+;;
