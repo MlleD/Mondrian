@@ -39,11 +39,14 @@ let rec loop current_color bsp fbsp lines : unit =
     message;
     set_color next_c;    
     loop next_c bsp' fbsp lines;
-  else if event.keypressed && event.key = 'S' then
+  else if event.keypressed then
+    if event.key = 'S' then
     begin
       Ui.draw_current_bsp fbsp Ui.window_sizex Ui.game_sizey;
-      Ui.trace_lines lines;
+      Ui.trace_lines lines
     end
+    else if event.key = 'Q' then
+    raise Quit
   else loop current_color bsp fbsp lines;
 in
 Ui.init_window();
