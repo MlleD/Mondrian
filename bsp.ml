@@ -81,7 +81,7 @@ let random_final_bsp depth_max x_max y_max =
   in add_node 0 0 x_max 0 y_max
 ;;
 
-(* Renvoie le bsp initial correspondat au bsp passé en passé en paramètre *)
+(* Renvoie le bsp initial correspondant au bsp passé en paramètre *)
 let rec initial_bsp_from_bsp bsp = 
   match bsp with
   | R color -> R None
