@@ -1,6 +1,8 @@
 open Graphics
 
 exception Quit;;
+exception Replay;;
+exception Solution;;
 
 (* Initialise le jeu *)
 let init_game () =
@@ -19,9 +21,8 @@ let mouse_in_game_zone () =
   in x < Ui.window_sizex && y < Ui.game_sizey
 ;;
 
-
-let rec loop current_color bsp fbsp lines : unit = 
-  let event = wait_next_event [Button_down; Key_pressed] 
+let rec play current_color bsp fbsp lines : unit = 
+  let event = wait_next_event [Button_down; Key_pressed]
   in 
   (* S'il y a eu un clic de souris *)
   let invalid_click = not (mouse_in_game_zone()) || (Bsp.is_in_line lines event.mouse_x event.mouse_y)
@@ -38,30 +39,48 @@ let rec loop current_color bsp fbsp lines : unit =
     Ui.trace_lines lines;
     message;
     set_color next_c;    
-    loop next_c bsp' fbsp lines;
+    play next_c bsp' fbsp lines;
   else if event.keypressed then
-    if event.key = 'S' then
-    begin
-      Ui.draw_current_bsp fbsp Ui.window_sizex Ui.game_sizey;
-      Ui.trace_lines lines
-    end
-    else if event.key = 'Q' then
-    raise Quit
-    else if event.key = 'R' then
-    begin
-      set_color white;
-      fill_rect 0 0 Ui.window_sizex Ui.game_sizey;
-      set_color red;
-      let (new_bsp, new_fbsp, new_lines) = init_game() in loop red new_bsp new_fbsp new_lines
-    end
-  else loop current_color bsp fbsp lines;
-in
+  begin
+  if event.key = 'Q' then raise Quit
+  else if event.key = 'R' then raise Replay
+  else if event.key = 'S' then raise Solution
+  end
+  else play current_color bsp fbsp lines
+
+let rec wait_leave_game () =
+  let event = wait_next_event [Key_pressed]
+  in if event.keypressed then
+  if event.key = 'R' then raise Replay
+  else if event.key = 'Q' then raise Quit
+  else wait_leave_game ()
+;;
+
 Ui.init_window();
 Ui.display_information();
-let (bsp, fbsp, lines) = init_game ()
-in
-set_color red;
-try loop red bsp fbsp lines
-with 
-| Quit -> close_graph ()
-| Graphic_failure ("fatal I/O error") -> close_graph()
+let rec new_game () =
+  set_color red;
+  let (bsp, fbsp, lines) = init_game ()
+  in
+  try 
+  play red bsp fbsp lines
+  with 
+  | Quit -> close_graph ()
+  | Replay -> 
+    (* Nettoyage de la zone de jeu *)
+    set_color white;
+    fill_rect 0 0 Ui.window_sizex Ui.game_sizey;
+    new_game();
+  | Solution -> 
+    Ui.draw_current_bsp fbsp Ui.window_sizex Ui.game_sizey;
+    Ui.trace_lines lines;
+    try wait_leave_game () with
+    | Quit -> close_graph()
+    | Replay ->
+      (* Nettoyage de la zone de jeu *)
+      set_color white;
+      fill_rect 0 0 Ui.window_sizex Ui.game_sizey;
+      new_game();
+  | Graphic_failure ("fatal I/O error") -> close_graph()
+in new_game()
+
