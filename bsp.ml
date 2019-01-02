@@ -75,10 +75,10 @@ let random_final_bsp depth_max x_max y_max =
       else
         let random_y = Aleatoire.random y_min y_max
         in L ( {coord = random_y; colored = Random.bool() },
-                add_node next_depth x_min x_max (random_y - 1) y_max,
-                add_node next_depth x_min x_max y_min (random_y + 1)
+                add_node next_depth x_min x_max y_min (random_y - 1),
+                add_node next_depth x_min x_max (random_y + 1) y_max
         )
-  in add_node 0 1 x_max 1 y_max
+  in add_node 0 0 x_max 0 y_max
 ;;
 
 (* Renvoie le bsp initial correspondat au bsp passé en passé en paramètre *)
