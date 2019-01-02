@@ -47,6 +47,13 @@ let rec loop current_color bsp fbsp lines : unit =
     end
     else if event.key = 'Q' then
     raise Quit
+    else if event.key = 'R' then
+    begin
+      set_color white;
+      fill_rect 0 0 Ui.window_sizex Ui.game_sizey;
+      set_color red;
+      let (new_bsp, new_fbsp, new_lines) = init_game() in loop red new_bsp new_fbsp new_lines
+    end
   else loop current_color bsp fbsp lines;
 in
 Ui.init_window();
