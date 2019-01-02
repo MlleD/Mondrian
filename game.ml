@@ -47,7 +47,7 @@ let rec loop current_color bsp fbsp lines : unit =
   else loop current_color bsp fbsp lines;
 in
 Ui.init_window();
-Ui.display_solution_message();
+Ui.display_information();
 let (bsp, fbsp, lines) = init_game ()
 in
 set_color red;
