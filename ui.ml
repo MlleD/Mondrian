@@ -1,9 +1,16 @@
 open Graphics
 open Bsp
 
+(* Dimensions des zones de la fenetre *)
+let window_sizex = 600;;
+let window_sizey = 400;;
+let height_message_zone = 50;;
+let game_sizey = window_sizey - height_message_zone;;
+
 (* Initialise la fenêtre graphique *)
 let init_window () : unit = 
-  open_graph " 600x400";
+  let dims_string = " " ^ (string_of_int window_sizex) ^ "x" ^ (string_of_int window_sizey)
+  in open_graph dims_string;
   set_window_title "Mondrian";
 ;;
 
@@ -33,4 +40,21 @@ let draw_current_bsp bsp x_max y_max =
   in
   List.iter trace_r rect_l;
   trace_lines lines_l
+;;
+
+let prepare_message () =
+  Graphics.set_color white;
+  Graphics.fill_rect 0 game_sizey window_sizex height_message_zone;
+  Graphics.set_color black;
+  Graphics.moveto 70 (game_sizey + 20);
+  Graphics.set_text_size 20
+;;
+
+let display_win_message () = 
+  prepare_message ();
+  Graphics.draw_string "You won ! Congratulations ! "
+;;
+let display_continue_message () =
+  prepare_message (); 
+  Graphics.draw_string "Continue"
 ;;
